@@ -91,7 +91,7 @@ namespace iSeries
             }
         }
 
-        public void Run(string commandText)
+        public void Run(string commandName)
         {
             if (system.IsConnected(cwbcoServiceEnum.cwbcoServiceRemoteCmd) == 0)
             {
@@ -100,7 +100,7 @@ namespace iSeries
 
             try
             {
-                command.Run(commandText);
+                command.Run(commandName);
             }
             catch (Exception ex)
             {
