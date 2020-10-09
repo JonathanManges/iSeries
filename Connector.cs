@@ -184,7 +184,7 @@ namespace iSeriesConnector
 
         public void RevertToSelf()
         {
-            SwitchUser(this.UserId);
+            this.SwitchUser(this.UserId);
         }
 
         public void Dispose()
@@ -266,7 +266,7 @@ namespace iSeriesConnector
 
         ~Connector()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
     }
 }
