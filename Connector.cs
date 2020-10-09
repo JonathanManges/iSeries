@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace iSeriesConnector
 {
-    public class Class1
+    public class Connector
     {
     }
 }
