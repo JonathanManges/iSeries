@@ -17,23 +17,23 @@ namespace iSeriesConnector
 
         private Connector()
         {
-            this.system = new AS400System();
-            this.program = new Program();
-            this.command = new Command();
+            system = new AS400System();
+            program = new Program();
+            command = new Command();
         }
 
         public Connector(string systemName, string userId, string password)
             : this()
         {
-            this.SystemName = systemName;
-            this.UserId = userId;
-            this.Password = password;
-            this.system.Define(this.SystemName);
-            this.system.UserID = this.UserId;
-            this.system.Password = this.Password;
-            this.system.PromptMode = cwbcoPromptModeEnum.cwbcoPromptNever;
-            this.program.system = this.system;
-            this.command.system = this.system;
+            SystemName = systemName;
+            UserId = userId;
+            Password = password;
+            system.Define(SystemName);
+            system.UserID = UserId;
+            system.Password = Password;
+            system.PromptMode = cwbcoPromptModeEnum.cwbcoPromptNever;
+            program.system = system;
+            command.system = system;
         }
 
         public string SystemName
@@ -62,28 +62,28 @@ namespace iSeriesConnector
 
         public void Connect()
         {
-            if (this.system.IsConnected(cwbcoServiceEnum.cwbcoServiceRemoteCmd) == 0)
+            if (system.IsConnected(cwbcoServiceEnum.cwbcoServiceRemoteCmd) == 0)
             {
-                this.system.Connect(cwbcoServiceEnum.cwbcoServiceRemoteCmd);
+                system.Connect(cwbcoServiceEnum.cwbcoServiceRemoteCmd);
                 // Notice: This allows the error messages to be automatically answered which in turn returns the error back to this class instead of waiting on a response from the operator
-                this.Run("CHGJOB INQMSGRPY(*DFT)");
+                Run("CHGJOB INQMSGRPY(*DFT)");
             }
         }
 
         public void Call(string programName, string libraryName, ProgramParameters parameters)
         {
-            if (this.system.IsConnected(cwbcoServiceEnum.cwbcoServiceRemoteCmd) == 0)
+            if (system.IsConnected(cwbcoServiceEnum.cwbcoServiceRemoteCmd) == 0)
             {
-                this.Connect();
+                Connect();
             }
 
-            this.program.ProgramName = programName;
-            this.program.LibraryName = libraryName;
-            this.ProgramParameters = parameters;
+            program.ProgramName = programName;
+            program.LibraryName = libraryName;
+            ProgramParameters = parameters;
 
             try
             {
-                this.program.Call(this.ProgramParameters);
+                program.Call(ProgramParameters);
             }
             catch (Exception ex)
             {
@@ -91,16 +91,16 @@ namespace iSeriesConnector
             }
         }
 
-        public void Run(string command)
+        public void Run(string commandText)
         {
-            if (this.system.IsConnected(cwbcoServiceEnum.cwbcoServiceRemoteCmd) == 0)
+            if (system.IsConnected(cwbcoServiceEnum.cwbcoServiceRemoteCmd) == 0)
             {
-                this.Connect();
+                Connect();
             }
 
             try
             {
-                this.command.Run(command);
+                command.Run(commandText);
             }
             catch (Exception ex)
             {
@@ -115,15 +115,15 @@ namespace iSeriesConnector
 
             foreach (string library in libraryList)
             {
-                this.Run(string.Format("ADDLIBLE {0} POSITION(*AFTER QTEMP)", library));
+                Run(string.Format("ADDLIBLE {0} POSITION(*AFTER QTEMP)", library));
             }
         }
 
         public void SwitchUser(string newUser)
         {
-            if (this.system.IsConnected(cwbcoServiceEnum.cwbcoServiceRemoteCmd) == 0)
+            if (system.IsConnected(cwbcoServiceEnum.cwbcoServiceRemoteCmd) == 0)
             {
-                this.Connect();
+                Connect();
             }
 
             StringConverter stringConverter = new StringConverter();
@@ -156,7 +156,7 @@ namespace iSeriesConnector
             //parameters.Append("ErrorCode", cwbrcParameterTypeEnum.cwbrcInout, errorStucture.Length);
             //parameters["ErrorCode"].Value = errorStucture.Bytes;
 
-            this.Call("QSYGETPH", "*LIBL", parameters);
+            Call("QSYGETPH", "*LIBL", parameters);
 
             //errorStucture.Bytes = parameters["ErrorCode"].Value;
 
@@ -179,12 +179,12 @@ namespace iSeriesConnector
             parameters.Append("Handle", cwbx.cwbrcParameterTypeEnum.cwbrcInput, 12);
             parameters["Handle"].Value = handle;
 
-            this.Call("QWTSETP", "*LIBL", parameters);
+            Call("QWTSETP", "*LIBL", parameters);
         }
 
         public void RevertToSelf()
         {
-            this.SwitchUser(this.UserId);
+            SwitchUser(UserId);
         }
 
         public void Dispose()
@@ -196,14 +196,14 @@ namespace iSeriesConnector
 
         public bool VerifyUserIdPassword(string userId, string password)
         {
-            if (this.system.IsConnected(cwbcoServiceEnum.cwbcoServiceRemoteCmd) == 0)
+            if (system.IsConnected(cwbcoServiceEnum.cwbcoServiceRemoteCmd) == 0)
             {
-                this.Connect();
+                Connect();
             }
 
             try
             {
-                this.system.VerifyUserIDPassword(userId, password);
+                system.VerifyUserIDPassword(userId, password);
                 return true;
             }
             catch
@@ -214,7 +214,7 @@ namespace iSeriesConnector
 
         protected virtual void Dispose(bool disposing)
         {
-            if (this.disposed)
+            if (disposed)
             {
                 return;
             }
@@ -224,37 +224,37 @@ namespace iSeriesConnector
                 // Handle managed objects here
             }
 
-            if (this.system.IsConnected(cwbcoServiceEnum.cwbcoServiceRemoteCmd) != 0)
+            if (system.IsConnected(cwbcoServiceEnum.cwbcoServiceRemoteCmd) != 0)
             {
-                this.system.Disconnect(cwbcoServiceEnum.cwbcoServiceRemoteCmd);
+                system.Disconnect(cwbcoServiceEnum.cwbcoServiceRemoteCmd);
             }
 
-            Marshal.ReleaseComObject(this.command);
-            Marshal.ReleaseComObject(this.program);
-            Marshal.ReleaseComObject(this.system);
+            Marshal.ReleaseComObject(command);
+            Marshal.ReleaseComObject(program);
+            Marshal.ReleaseComObject(system);
 
-            this.disposed = true;
+            disposed = true;
         }
 
         private void ThrowCustomException(Exception ex)
         {
             StringBuilder exception = new StringBuilder();
 
-            cwbx.Errors errors = this.system.Errors;
+            cwbx.Errors errors = system.Errors;
 
             foreach (cwbx.Error error in errors)
             {
                 exception.AppendLine(error.Text);
             }
 
-            errors = this.program.Errors;
+            errors = program.Errors;
 
             foreach (cwbx.Error error in errors)
             {
                 exception.AppendLine(error.Text);
             }
 
-            errors = this.command.Errors;
+            errors = command.Errors;
 
             foreach (cwbx.Error error in errors)
             {
@@ -266,7 +266,7 @@ namespace iSeriesConnector
 
         ~Connector()
         {
-            this.Dispose(false);
+            Dispose(false);
         }
     }
 }
