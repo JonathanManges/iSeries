@@ -9,14 +9,14 @@ namespace iSeriesConnector
 {
     public class Utils
     {
-        public static DateTime ConvertIntToDate(int dateToConvert, bool centuryMarker)
+        public static DateTime ConvertIntToDate(int dateToConvert)
         {
-            if (centuryMarker)
+            if (dateToConvert.ToString().Length < 8)
             {
                 dateToConvert += 19000000;
             }
 
-            DateTime.TryParseExact(dateToConvert.ToString(), "yyyyddMM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime returnValue);
+            DateTime.TryParseExact(dateToConvert.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime returnValue);
 
             return returnValue;
         }
@@ -28,14 +28,9 @@ namespace iSeriesConnector
             return returnValue;
         }
 
-        public static DateTime ConvertIntToDateTime(int dateToConvert, bool centuryMartker, int timeToConvert)
+        public static DateTime ConvertIntToDateTime(int dateToConvert, int timeToConvert)
         {
-            if (centuryMartker)
-            {
-                dateToConvert += 19000000;
-            }
-
-            DateTime dateReturnValue = ConvertIntToDate(dateToConvert, centuryMartker);
+            DateTime dateReturnValue = ConvertIntToDate(dateToConvert);
             DateTime timeReturnValue = ConvertIntToTime(timeToConvert);
 
             if (dateReturnValue == default || timeReturnValue == default)
@@ -52,11 +47,11 @@ namespace iSeriesConnector
         {
             if (centuryMarker)
             {
-                return int.Parse(dateToConvert.ToString("yyyddMM")) - 19000000;
+                return int.Parse(dateToConvert.ToString("yyyyMMdd")) - 19000000;
             }
             else
             {
-                return int.Parse(dateToConvert.ToString("yyyyddMM"));
+                return int.Parse(dateToConvert.ToString("yyyyMMdd"));
             }
         }
 

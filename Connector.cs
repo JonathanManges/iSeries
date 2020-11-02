@@ -10,9 +10,9 @@ namespace iSeriesConnector
 {
     public class Connector
     {
-        private AS400System system;
-        private Program program;
-        private Command command;
+        private readonly AS400System system;
+        private readonly Program program;
+        private readonly Command command;
         private bool disposed = false;
 
         private Connector()
@@ -54,7 +54,7 @@ namespace iSeriesConnector
             private set;
         }
 
-        public ProgramParameters ProgramParameters
+        public ProgramParameters Parameters
         {
             get;
             private set;
@@ -79,11 +79,11 @@ namespace iSeriesConnector
 
             program.ProgramName = programName;
             program.LibraryName = libraryName;
-            ProgramParameters = parameters;
+            Parameters = parameters;
 
             try
             {
-                program.Call(ProgramParameters);
+                program.Call(Parameters);
             }
             catch (Exception ex)
             {
@@ -131,17 +131,17 @@ namespace iSeriesConnector
 
             ProgramParameters parameters = new ProgramParameters();
 
-            parameters = new cwbx.ProgramParameters();
+            parameters = new ProgramParameters();
 
-            parameters.Append("UserID", cwbx.cwbrcParameterTypeEnum.cwbrcInput, 10);
+            parameters.Append("UserID", cwbrcParameterTypeEnum.cwbrcInput, 10);
             stringConverter.Length = 10;
             parameters["UserID"].Value = stringConverter.ToBytes(newUser.Trim().ToUpper());
 
-            parameters.Append("Password", cwbx.cwbrcParameterTypeEnum.cwbrcInput, 10);
+            parameters.Append("Password", cwbrcParameterTypeEnum.cwbrcInput, 10);
             stringConverter.Length = 10;
             parameters["Password"].Value = stringConverter.ToBytes("*NOPWDCHK");
 
-            parameters.Append("Handle", cwbx.cwbrcParameterTypeEnum.cwbrcOutput, 12);
+            parameters.Append("Handle", cwbrcParameterTypeEnum.cwbrcOutput, 12);
 
             //Structure errorStucture = new Structure();
             //errorStucture.Fields.Append("bytesprov", 4);
@@ -175,8 +175,8 @@ namespace iSeriesConnector
 
             byte[] handle = parameters["Handle"].Value;
 
-            parameters = new cwbx.ProgramParameters();
-            parameters.Append("Handle", cwbx.cwbrcParameterTypeEnum.cwbrcInput, 12);
+            parameters = new ProgramParameters();
+            parameters.Append("Handle", cwbrcParameterTypeEnum.cwbrcInput, 12);
             parameters["Handle"].Value = handle;
 
             Call("QWTSETP", "*LIBL", parameters);
@@ -240,23 +240,23 @@ namespace iSeriesConnector
         {
             StringBuilder exception = new StringBuilder();
 
-            cwbx.Errors errors = system.Errors;
+            Errors errors = system.Errors;
 
-            foreach (cwbx.Error error in errors)
+            foreach (Error error in errors)
             {
                 exception.AppendLine(error.Text);
             }
 
             errors = program.Errors;
 
-            foreach (cwbx.Error error in errors)
+            foreach (Error error in errors)
             {
                 exception.AppendLine(error.Text);
             }
 
             errors = command.Errors;
 
-            foreach (cwbx.Error error in errors)
+            foreach (Error error in errors)
             {
                 exception.AppendLine(error.Text);
             }
