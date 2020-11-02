@@ -8,14 +8,14 @@ using cwbx;
 
 namespace iSeriesConnector
 {
-    public class Connector
+    public class Connector : IDisposable
     {
         private readonly AS400System system;
         private readonly Program program;
         private readonly Command command;
         private bool disposed = false;
 
-        private Connector()
+        public Connector()
         {
             system = new AS400System();
             program = new Program();
@@ -30,7 +30,8 @@ namespace iSeriesConnector
             Password = password;
             system.Define(SystemName);
             system.UserID = UserId;
-            system.Password = Password;
+            //system.Password = Password;
+            system.Password = password;
             system.PromptMode = cwbcoPromptModeEnum.cwbcoPromptNever;
             program.system = system;
             command.system = system;
@@ -48,10 +49,10 @@ namespace iSeriesConnector
             private set;
         }
 
-        public string Password
+        private string Password
         {
             get;
-            private set;
+            set;
         }
 
         public ProgramParameters Parameters
@@ -62,6 +63,21 @@ namespace iSeriesConnector
 
         public void Connect()
         {
+            if (string.IsNullOrWhiteSpace(SystemName))
+            {
+                throw new InvalidOperationException("The SystemName property has not been initialized.");
+            }
+
+            if (string.IsNullOrWhiteSpace(UserId))
+            {
+                throw new InvalidOperationException("The UserId property has not been initialized.");
+            }
+
+            if (string.IsNullOrWhiteSpace(Password))
+            {
+                throw new InvalidOperationException("The Password property has not been initialized.");
+            }
+
             if (system.IsConnected(cwbcoServiceEnum.cwbcoServiceRemoteCmd) == 0)
             {
                 system.Connect(cwbcoServiceEnum.cwbcoServiceRemoteCmd);
@@ -113,10 +129,12 @@ namespace iSeriesConnector
             List<string> libraryList = libraries.TrimEnd().Split(',').ToList();
             libraryList.Reverse();
 
-            foreach (string library in libraryList)
-            {
-                Run(string.Format("ADDLIBLE {0} POSITION(*AFTER QTEMP)", library));
-            }
+            libraryList.ForEach(x => Run($"ADDLIBLE {x} POSITION(*AFTER QTEMP)"));
+
+            //foreach (string library in libraryList)
+            //{
+            //    Run(string.Format("ADDLIBLE {0} POSITION(*AFTER QTEMP)", library));
+            //}
         }
 
         public void SwitchUser(string newUser)
