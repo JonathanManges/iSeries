@@ -6,23 +6,23 @@ using System.Text;
 
 using cwbx;
 
-namespace iSeries
+namespace iSeriesConnector
 {
-    public class iSeriesConnector
+    public class Connector
     {
         private AS400System system;
         private Program program;
         private Command command;
         private bool disposed = false;
 
-        private iSeriesConnector()
+        private Connector()
         {
             system = new AS400System();
             program = new Program();
             command = new Command();
         }
 
-        public iSeriesConnector(string systemName, string userId, string password)
+        public Connector(string systemName, string userId, string password)
             : this()
         {
             SystemName = systemName;
@@ -264,7 +264,7 @@ namespace iSeries
             throw new Exception(exception.ToString());
         }
 
-        ~iSeriesConnector()
+        ~Connector()
         {
             Dispose(false);
         }
