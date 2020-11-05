@@ -7,8 +7,8 @@
     <ProjectGuid>{70B22345-2E45-4BC9-B0DF-C4A8B458DF03}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>iSeriesConnector</RootNamespace>
-    <AssemblyName>iSeriesConnector</AssemblyName>
+    <RootNamespace>iSeries</RootNamespace>
+    <AssemblyName>iSeries</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

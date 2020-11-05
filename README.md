@@ -1,2 +1,2 @@
 ﻿<p>
-    # iSeriesConnector</p>
+    # iSeries</p>

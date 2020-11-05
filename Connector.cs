@@ -6,7 +6,7 @@ using System.Text;
 
 using cwbx;
 
-namespace iSeriesConnector
+namespace iSeries
 {
     public class Connector : IDisposable
     {
