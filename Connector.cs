@@ -22,7 +22,7 @@ namespace iSeries
             command = new Command();
         }
 
-        public Connector(string systemName, string userId, string password)
+        public Connector(string systemName, string userId, string password, bool useSecureSockets = false)
             : this()
         {
             SystemName = systemName;
@@ -32,12 +32,19 @@ namespace iSeries
             system.UserID = UserId;
             //system.Password = Password;
             system.Password = password;
+            system.UseSecureSockets = useSecureSockets;
             system.PromptMode = cwbcoPromptModeEnum.cwbcoPromptNever;
             program.system = system;
             command.system = system;
         }
 
         public string SystemName
+        {
+            get;
+            private set;
+        }
+
+        public bool UseSecureSockets
         {
             get;
             private set;
