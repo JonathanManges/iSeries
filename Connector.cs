@@ -28,6 +28,7 @@ namespace iSeries
             SystemName = systemName;
             UserId = userId;
             Password = password;
+            UseSecureSockets = useSecureSockets;
             system.Define(SystemName);
             system.UserID = UserId;
             //system.Password = Password;
