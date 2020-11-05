@@ -130,11 +130,6 @@ namespace iSeries
             libraryList.Reverse();
 
             libraryList.ForEach(x => Run($"ADDLIBLE {x} POSITION(*AFTER QTEMP)"));
-
-            //foreach (string library in libraryList)
-            //{
-            //    Run(string.Format("ADDLIBLE {0} POSITION(*AFTER QTEMP)", library));
-            //}
         }
 
         public void SwitchUser(string newUser)
